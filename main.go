@@ -1,7 +1,7 @@
 package main
 
-import
-(
+import (
+	"context"
 	"fmt"
 	"github.com/gorilla/mux"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -56,7 +56,16 @@ func main(){
 	router.HandleFunc("/", index)
 	router.HandleFunc("/start", start)
 	router.HandleFunc("/stop", stop)
-	fmt.Println("Server is running atm")
+	router.HandleFunc("/shutdown", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("Shutting down man!")
+		w.Write([]byte("Shut down!")) // Write response body
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
+		defer cancel()
+		// Doesn't block if no connections, but will otherwise wait
+		// until the timeout deadline.
+		server.Shutdown(ctx)
+	})
+	fmt.Println("Server is running atm"+config.Host+":"+config.Port)
 	log.Fatal(server.ListenAndServe())
 
 }
