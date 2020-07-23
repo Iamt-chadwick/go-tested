@@ -1,4 +1,4 @@
-module go-test
+module github.com/Iamt-chadwick/go-test
 
 go 1.13
 
